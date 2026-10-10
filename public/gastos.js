@@ -52,8 +52,13 @@ function llenarFiltroMesAnio() {
 
 async function cargarConfig() {
   const res = await fetch('/api/config');
-  const { sucursales, tomoxSucursales: tomoxDeConfig } = await res.json();
+  const cfg = await res.json();
+  window.__cfg = cfg;
+  const { sucursales, tomoxSucursales: tomoxDeConfig } = cfg;
 
+  const cfg2 = window.__cfg || {};
+  document.getElementById('rubro').innerHTML = '<option value="">Elige un rubro</option>' + (cfg2.rubros || []).map((r) => `<option>${r}</option>`).join('');
+  document.getElementById('forma-pago').innerHTML = (cfg2.formasPago || []).map((r) => `<option>${r}</option>`).join('');
   sucursalesTodas = sucursales;
   tomoxSucursales = tomoxDeConfig;
   actualizarUIporMarca();
@@ -218,9 +223,12 @@ function renderTabla() {
   filas.forEach((g) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${escapeHtml(g.concepto)}</td>
       <td>${escapeHtml(g.fecha)}</td>
+      <td>${escapeHtml(g.rubro || '')}${g.no_gasto ? ' <span class="opcional">(no es gasto del mes)</span>' : ''}</td>
+      <td>${escapeHtml(g.concepto)}</td>
+      <td>${escapeHtml(g.forma_pago || '')}</td>
       <td>${fmtMoneda(g.monto)}</td>
+      <td>${escapeHtml(g.autorizo || '')}</td>
       <td>${g.comprobante ? `<a href="/api/gastos/comprobante/${encodeURIComponent(g.comprobante)}" target="_blank" rel="noopener">Ver</a>` : '-'}</td>
       <td class="acciones-cell"></td>
     `;
@@ -251,6 +259,10 @@ function cargarEnFormulario(g) {
   actualizarModoCompartido();
   selectSucursal.value = g.sucursal;
   document.getElementById('concepto').value = g.concepto;
+  document.getElementById('rubro').value = g.rubro || '';
+  document.getElementById('forma-pago').value = g.forma_pago || '';
+  document.getElementById('autorizo').value = g.autorizo || '';
+  document.getElementById('recibio').value = g.recibio || '';
   document.getElementById('fecha').value = g.fecha;
   document.getElementById('monto').value = g.monto;
   document.getElementById('comprobante-actual').textContent = g.comprobante
@@ -294,6 +306,10 @@ form.addEventListener('submit', async (e) => {
   datos.set('concepto', document.getElementById('concepto').value.trim());
   datos.set('fecha', document.getElementById('fecha').value);
   datos.set('monto', document.getElementById('monto').value);
+  datos.set('rubro', document.getElementById('rubro').value);
+  datos.set('forma_pago', document.getElementById('forma-pago').value);
+  datos.set('autorizo', document.getElementById('autorizo').value.trim());
+  datos.set('recibio', document.getElementById('recibio').value.trim());
   if (archivoComprobante) datos.set('comprobante', archivoComprobante);
   if (!id) datos.set('marca', marcaActual());
 
@@ -370,5 +386,18 @@ requireAuth().then(async (user) => {
   if (!user) return;
   llenarFiltroMesAnio();
   await cargarConfig();
+  cargarGastos();
+});
+
+document.getElementById('importar-concil').addEventListener('change', async (e) => {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const datos = new FormData();
+  datos.set('archivo', archivo);
+  const res = await fetch('/api/gastos/importar-conciliacion', { method: 'POST', body: datos });
+  const r = await res.json().catch(() => ({}));
+  e.target.value = '';
+  if (!res.ok) return alert(r.error || 'No se pudo cargar el archivo.');
+  alert(`Gastos nuevos: ${r.nuevos}. Ya estaban cargados: ${r.repetidos}.`);
   cargarGastos();
 });

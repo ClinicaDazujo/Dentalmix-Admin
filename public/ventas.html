@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ventas | Dentalmix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="assets/logo_dentalmix.png" alt="Dentalmix" class="logo" />
+      <nav class="nav">
+        <a href="index.html">Cuentas por Pagar</a>
+        <a href="gastos.html">Gastos</a>
+        <a href="ventas.html" class="active">Ventas</a>
+        <a href="caja.html">Caja</a>
+        <a href="cierre.html">Cierre de Mes</a>
+        <a href="proyeccion.html">Proyeccion Mensual</a>
+        <a href="usuarios.html" data-admin-only>Usuarios</a>
+      </nav>
+      <div class="user-box">
+        <span data-user-name></span>
+        <button type="button" id="logout-btn" class="secondary small">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="toolbar">
+        <h2>Ventas por dia</h2>
+        <div class="toolbar-actions">
+          <input type="month" id="mes" />
+          <label class="button secondary small" style="cursor:pointer">Importar Excel<input type="file" id="importar" accept=".xlsx" hidden /></label>
+          <a href="#" id="export-csv" class="button">Exportar CSV</a>
+        </div>
+      </div>
+      <p class="opcional">Importa el reporte "Ingresos por metodo de pago" o el corte diario de SICAR. Cada dia puede corregirse a mano. El total del mes alimenta el Cierre de Mes.</p>
+      <div class="kpi-row" id="kpis"></div>
+    </section>
+
+    <section class="card">
+      <h2>Comision del mes</h2>
+      <div class="kpi-row" id="comision"></div>
+      <p class="opcional">Se calcula sobre efectivo + tarjeta + transferencia. No incluye credito ni vales.</p>
+    </section>
+
+    <section class="card">
+      <h2>Capturar o corregir un dia</h2>
+      <form id="dia-form">
+        <div class="grid">
+          <label>Fecha<input type="date" id="f-fecha" required /></label>
+          <label>Efectivo<input type="number" id="f-efectivo" step="0.01" min="0" /></label>
+          <label>Tarjeta<input type="number" id="f-tarjeta" step="0.01" min="0" /></label>
+          <label>Transferencia<input type="number" id="f-transferencia" step="0.01" min="0" /></label>
+          <label>Credito<input type="number" id="f-credito" step="0.01" min="0" /></label>
+          <label>Vales<input type="number" id="f-vales" step="0.01" min="0" /></label>
+        </div>
+        <div class="form-actions"><button type="submit">Guardar dia</button></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Fecha</th><th>Efectivo</th><th>Tarjeta</th><th>Transferencia</th><th>Credito</th><th>Vales</th><th>Total</th><th>A comisionar</th><th>Comision</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="ventas.js"></script>
+</body>
+</html>

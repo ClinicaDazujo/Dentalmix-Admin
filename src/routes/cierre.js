@@ -14,6 +14,8 @@ const COLUMNAS = [
   { header: 'Margen', key: 'margen', width: 12 },
 ];
 
+const r2 = (n) => Math.round(n * 100) / 100;
+
 function mesActual() {
   const hoy = new Date();
   return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
@@ -24,7 +26,7 @@ function margenTexto(ingreso, utilidad) {
 }
 
 function resumenMes(mes, marca) {
-  const gastos = db.prepare("SELECT sucursal, monto FROM gastos WHERE substr(fecha, 1, 7) = ? AND marca = ?").all(mes, marca);
+  const gastos = db.prepare("SELECT sucursal, monto FROM gastos WHERE substr(fecha, 1, 7) = ? AND marca = ? AND no_gasto = 0").all(mes, marca);
   const ingresos = db.prepare('SELECT sucursal, monto FROM ingresos WHERE mes = ? AND marca = ?').all(mes, marca);
 
   // Laboratorio no se reparte por clinica (su gasto es unico), asi que se
@@ -47,7 +49,7 @@ function resumenMes(mes, marca) {
     const ingreso = ingresos.filter((i) => i.sucursal === sucursal).reduce((s, i) => s + i.monto, 0);
     const gasto = gastos.filter((g) => g.sucursal === sucursal).reduce((s, g) => s + g.monto, 0);
     const utilidad = ingreso - gasto;
-    return { sucursal, ingreso, gasto, utilidad, margen: margenTexto(ingreso, utilidad) };
+    return { sucursal, ingreso: r2(ingreso), gasto: r2(gasto), utilidad: r2(utilidad), margen: margenTexto(ingreso, utilidad) };
   });
 
   const totalIngreso = filas.reduce((s, f) => s + f.ingreso, 0);
@@ -55,9 +57,9 @@ function resumenMes(mes, marca) {
   const totalUtilidad = totalIngreso - totalGasto;
   filas.push({
     sucursal: 'TOTAL',
-    ingreso: totalIngreso,
-    gasto: totalGasto,
-    utilidad: totalUtilidad,
+    ingreso: r2(totalIngreso),
+    gasto: r2(totalGasto),
+    utilidad: r2(totalUtilidad),
     margen: margenTexto(totalIngreso, totalUtilidad),
   });
 

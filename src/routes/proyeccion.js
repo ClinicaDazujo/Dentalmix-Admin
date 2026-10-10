@@ -56,7 +56,7 @@ function datosProyeccion(sucursal, desde, hasta) {
       .prepare('SELECT COALESCE(SUM(monto), 0) AS total FROM ingresos WHERE sucursal = ? AND mes = ?')
       .get(sucursal, mes).total;
     const gasto = db
-      .prepare("SELECT COALESCE(SUM(monto), 0) AS total FROM gastos WHERE sucursal = ? AND substr(fecha, 1, 7) = ?")
+      .prepare("SELECT COALESCE(SUM(monto), 0) AS total FROM gastos WHERE sucursal = ? AND substr(fecha, 1, 7) = ? AND no_gasto = 0")
       .get(sucursal, mes).total;
     const utilidad = ingreso - gasto;
     const pctCumplido = meta ? `${((ingreso / meta) * 100).toFixed(1)}%` : '-';

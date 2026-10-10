@@ -5,11 +5,13 @@ const cookieParser = require('cookie-parser');
 const cuentasRouter = require('./routes/cuentas');
 const gastosRouter = require('./routes/gastos');
 const ingresosRouter = require('./routes/ingresos');
+const ventasRouter = require('./routes/ventas');
+const cajaRouter = require('./routes/caja');
 const cierreRouter = require('./routes/cierre');
 const proyeccionRouter = require('./routes/proyeccion');
 const authRouter = require('./routes/auth');
 const usuariosRouter = require('./routes/usuarios');
-const { METAS_MENSUALES, TOMOX_SUCURSALES, SUCURSAL_LABORATORIO } = require('./constants');
+const { RUBROS, NO_GASTO_RUBROS, FORMAS_PAGO, METAS_MENSUALES, TOMOX_SUCURSALES, SUCURSAL_LABORATORIO } = require('./constants');
 const sucursales = require('./sucursales');
 const { requireAuth, requireAdmin } = require('./auth');
 const { iniciarCron } = require('./cron');
@@ -44,6 +46,9 @@ app.get('/api/config', requireAuth, (req, res) => {
   res.json({
     sucursales: sucursales.listarActivas(),
     metasMensuales: METAS_MENSUALES,
+    rubros: RUBROS,
+    noGastoRubros: NO_GASTO_RUBROS,
+    formasPago: FORMAS_PAGO,
     tomoxSucursales: TOMOX_SUCURSALES,
     sucursalLaboratorio: SUCURSAL_LABORATORIO,
   });
@@ -52,6 +57,8 @@ app.get('/api/config', requireAuth, (req, res) => {
 app.use('/api/cuentas', requireAuth, cuentasRouter);
 app.use('/api/gastos', requireAuth, gastosRouter);
 app.use('/api/ingresos', requireAuth, ingresosRouter);
+app.use('/api/ventas', requireAuth, ventasRouter);
+app.use('/api/caja', requireAuth, cajaRouter);
 app.use('/api/cierre', requireAuth, cierreRouter);
 app.use('/api/proyeccion', requireAuth, proyeccionRouter);
 app.use('/api/usuarios', requireAuth, requireAdmin, usuariosRouter);

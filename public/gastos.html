@@ -16,6 +16,8 @@
       <nav class="nav">
         <a href="index.html">Cuentas por Pagar</a>
         <a href="gastos.html" class="active">Gastos</a>
+        <a href="ventas.html">Ventas</a>
+        <a href="caja.html">Caja</a>
         <a href="cierre.html">Cierre de Mes</a>
         <a href="proyeccion.html">Proyeccion Mensual</a>
         <a href="usuarios.html" data-admin-only>Usuarios</a>
@@ -54,9 +56,26 @@
             <div id="sucursales-compartido" class="checkbox-grid"></div>
           </label>
           <label>
-            Concepto
+            Rubro
+            <select id="rubro" required></select>
+          </label>
+          <label>
+            Concepto (detalle del gasto)
             <input type="text" id="concepto" required />
           </label>
+          <label>
+            Forma de pago
+            <select id="forma-pago" required></select>
+          </label>
+          <label>
+            Autorizo <span class="opcional">(obligatorio en efectivo)</span>
+            <input type="text" id="autorizo" list="lista-personas" />
+          </label>
+          <label>
+            Quien recibio el dinero <span class="opcional">(opcional)</span>
+            <input type="text" id="recibio" list="lista-personas" />
+          </label>
+          <datalist id="lista-personas"><option value="Josué"></option><option value="César"></option><option value="Dra. Claudia"></option></datalist>
           <label>
             Fecha
             <input type="date" id="fecha" required />
@@ -91,6 +110,7 @@
           <select id="filtro-anio">
             <option value="">Todos los años</option>
           </select>
+          <label class="button secondary small" style="cursor:pointer">Cargar conciliacion (Excel)<input type="file" id="importar-concil" accept=".xlsx" hidden /></label>
           <a href="/api/gastos/export/csv" id="export-csv" class="button">Exportar CSV</a>
           <a href="/api/gastos/export/xlsx" id="export-xlsx" class="button">Exportar Excel</a>
         </div>
@@ -99,9 +119,12 @@
         <table id="tabla-gastos">
           <thead>
             <tr>
-              <th>Concepto</th>
               <th>Fecha</th>
+              <th>Rubro</th>
+              <th>Concepto</th>
+              <th>Pago</th>
               <th>Monto</th>
+              <th>Autorizo</th>
               <th>Comprobante</th>
               <th>Acciones</th>
             </tr>

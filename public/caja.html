@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caja | Dentalmix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="assets/logo_dentalmix.png" alt="Dentalmix" class="logo" />
+      <nav class="nav">
+        <a href="index.html">Cuentas por Pagar</a>
+        <a href="gastos.html">Gastos</a>
+        <a href="ventas.html">Ventas</a>
+        <a href="caja.html" class="active">Caja</a>
+        <a href="cierre.html">Cierre de Mes</a>
+        <a href="proyeccion.html">Proyeccion Mensual</a>
+        <a href="usuarios.html" data-admin-only>Usuarios</a>
+      </nav>
+      <div class="user-box">
+        <span data-user-name></span>
+        <button type="button" id="logout-btn" class="secondary small">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="toolbar">
+        <h2>Caja (efectivo)</h2>
+        <div class="toolbar-actions"><input type="month" id="mes" /></div>
+      </div>
+      <p class="opcional">Control interno del efectivo. Las ventas en efectivo vienen de Ventas y los gastos en efectivo de Gastos (forma de pago Efectivo); aqui solo se capturan cobranza, depositos y entregas.</p>
+      <div class="kpi-row" id="kpis"></div>
+    </section>
+
+    <section class="card">
+      <h2>Nuevo movimiento</h2>
+      <form id="mov-form">
+        <div class="grid">
+          <label>Tipo<select id="m-tipo" required></select></label>
+          <label>Fecha<input type="date" id="m-fecha" required /></label>
+          <label>Monto<input type="number" id="m-monto" step="0.01" min="0.01" required /></label>
+          <label>Concepto <span class="opcional">(obligatorio en entregas y ajustes)</span><input type="text" id="m-concepto" /></label>
+          <label>Quien recibio / manejo<input type="text" id="m-persona" list="personas" /></label>
+          <label>Autorizo <span class="opcional">(obligatorio en entregas)</span><input type="text" id="m-autorizo" list="personas" /></label>
+          <label class="checkbox-label"><input type="checkbox" id="m-depositado" /> Deposito confirmado en el banco</label>
+        </div>
+        <datalist id="personas"><option value="Josué"></option><option value="César"></option><option value="Dra. Claudia"></option></datalist>
+        <div class="form-actions"><button type="submit">Guardar</button></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Entregas por persona</h2>
+      <div class="kpi-row" id="personas-kpi"></div>
+    </section>
+
+    <section class="card">
+      <h2>Movimientos del mes</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Concepto</th><th>Persona</th><th>Autorizo</th><th>Deposito</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="caja.js"></script>
+</body>
+</html>

@@ -82,6 +82,42 @@ if (!columnasGastos.includes('marca')) {
   db.exec("ALTER TABLE gastos ADD COLUMN marca TEXT NOT NULL DEFAULT 'dentalmix'");
 }
 
+
+for (const [col, def] of [['rubro', 'TEXT'], ['forma_pago', 'TEXT'], ['autorizo', 'TEXT'], ['recibio', 'TEXT'], ['no_gasto', 'INTEGER NOT NULL DEFAULT 0'], ['origen', 'TEXT']]) {
+  if (!columnasGastos.includes(col)) db.exec(`ALTER TABLE gastos ADD COLUMN ${col} ${def}`);
+}
+
+// Ventas por dia y forma de pago (de SICAR). Alimenta el ingreso del cierre y la comision.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS ventas_dia (
+    fecha TEXT PRIMARY KEY,
+    efectivo REAL NOT NULL DEFAULT 0,
+    tarjeta REAL NOT NULL DEFAULT 0,
+    transferencia REAL NOT NULL DEFAULT 0,
+    credito REAL NOT NULL DEFAULT 0,
+    vales REAL NOT NULL DEFAULT 0,
+    fuente TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+// Libro de caja (control interno del efectivo). Las ventas en efectivo y los gastos en efectivo
+// no se capturan aqui: se toman de ventas_dia y de gastos (forma_pago = Efectivo).
+db.exec(`
+  CREATE TABLE IF NOT EXISTS caja_mov (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha TEXT NOT NULL,
+    tipo TEXT NOT NULL,
+    monto REAL NOT NULL,
+    concepto TEXT,
+    persona TEXT,
+    autorizo TEXT,
+    depositado INTEGER NOT NULL DEFAULT 0,
+    created_by TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS ingresos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
